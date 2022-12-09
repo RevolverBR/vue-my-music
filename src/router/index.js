@@ -6,6 +6,7 @@ import tabSinger from '@/views/singer'
 import tabTopList from '@/views/top-list'
 import singerDetail from '@/views/singer-detail'
 import album from '@/views/album'
+import topDetail from '@/views/top-detail'
 
 const routes = [
   {
@@ -38,7 +39,13 @@ const routes = [
   },
   {
     path: '/top-list',
-    component: tabTopList
+    component: tabTopList,
+    children: [
+      {
+        path: ':id',
+        component: topDetail
+      }
+    ]
   }
 ]
 
