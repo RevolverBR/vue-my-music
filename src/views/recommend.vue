@@ -15,19 +15,25 @@
               class="item"
               v-for="item in albums"
               :key="item.id"
+              @click="selectItem(item)"
             >
               <div class="icon">
-                <img v-lazy="item.pic" width="60" height="60">
+                <img v-lazy="item.pic" width="60" height="60" />
               </div>
               <div class="text">
-                <h2 class="name">{{item.username}}</h2>
-                <p class="title">{{item.title}}</p>
+                <h2 class="name">{{ item.username }}</h2>
+                <p class="title">{{ item.title }}</p>
               </div>
             </li>
           </ul>
         </div>
       </div>
     </my-scroll>
+    <router-view v-slot="{Component}">
+      <transition appear name="slide">
+        <component :is="Component" :data="selectAlbum" />
+      </transition>
+    </router-view>
   </div>
 </template>
 
@@ -35,6 +41,8 @@
 import { getRecommend } from '@/service/recommend'
 import myScroll from '@/components/base/scroll/scroll'
 import mySlider from '@/components/base/slider/slider'
+import storage from 'good-storage'
+import { ALBUM_KEY } from '@/assets/js/constant'
 
 export default {
   name: 'tabRecommend',
@@ -46,7 +54,8 @@ export default {
     return {
       sliders: [],
       albums: [],
-      loadingText: '！- - 你网络好差'
+      loadingText: '！- - 你网络好差',
+      selectAlbum: null
     }
   },
   async created() {
@@ -57,6 +66,18 @@ export default {
   computed: {
     loading() {
       return !this.sliders.length && !this.albums.length
+    }
+  },
+  methods: {
+    selectItem(album) {
+      this.selectAlbum = album
+      this.cacheAlbum(album)
+      this.$router.push({
+        path: `/recommend/${album.id}`
+      })
+    },
+    cacheAlbum(album) {
+      storage.session.set(ALBUM_KEY, album)
     }
   }
 }

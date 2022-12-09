@@ -5,6 +5,7 @@ import tabSearch from '@/views/search'
 import tabSinger from '@/views/singer'
 import tabTopList from '@/views/top-list'
 import singerDetail from '@/views/singer-detail'
+import album from '@/views/album'
 
 const routes = [
   {
@@ -13,7 +14,13 @@ const routes = [
   },
   {
     path: '/recommend',
-    component: tabRecommend
+    component: tabRecommend,
+    children: [
+      {
+        path: ':id',
+        component: album
+      }
+    ]
   },
   {
     path: '/singer',
