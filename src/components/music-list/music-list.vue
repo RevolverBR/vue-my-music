@@ -25,7 +25,7 @@
       @scroll="onScroll"
     >
       <div class="song-list-wrapper">
-        <song-list :songs="songs" @select="selectItem"></song-list>
+        <song-list :songs="songs" :rank="rank" @select="selectItem"></song-list>
       </div>
     </myScroll>
   </div>
@@ -64,7 +64,8 @@ export default {
     noResultText: {
       type: String,
       default: '抱歉，没有找到可播放的歌曲'
-    }
+    },
+    rank: Boolean
   },
   computed: {
     bgImageStyle() {
