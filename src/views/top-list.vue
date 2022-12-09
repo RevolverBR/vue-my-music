@@ -1,15 +1,15 @@
 <template>
   <div>
-    <Playlist></Playlist>
+    <confirm></confirm>
   </div>
 </template>
 
 <script>
-import Playlist from '../components/player/play-list'
+import confirm from '../components/base/confirm/confirm.vue'
 export default {
   name: 'tabTopList',
   components: {
-    Playlist
+    confirm
   }
 }
 </script>

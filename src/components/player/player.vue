@@ -7,7 +7,7 @@
       @leave="leave"
       @afterLeave="afterLeave"
     >
-      <div class="normal-player" v-show="fullScreen">
+      <div class="normal-player" v-show="fullScreen" ref="normalplayerRef">
         <div class="background">
           <img :src="currentSong.pic" />
         </div>
@@ -151,7 +151,9 @@ export default {
   },
   setup() {
     const store = useStore()
+    const normalplayerRef = ref(null)
     const fullScreen = computed(() => store.state.fullScreen)
+
     const currentSong = computed(() => store.getters.currentSong)
     const audioRef = ref(null)
     const barRef = ref(null)
@@ -283,9 +285,6 @@ export default {
           index = list.length - 1
         }
         store.commit('setCurrentIndex', index)
-        if (!playing.value) {
-          store.commit('setPlayingState', true)
-        }
       }
     }
     function next() {
@@ -301,9 +300,6 @@ export default {
           index = 0
         }
         store.commit('setCurrentIndex', index)
-        if (!playing.value) {
-          store.commit('setPlayingState', true)
-        }
       }
     }
 
@@ -362,6 +358,14 @@ export default {
       }
     }
 
+    // 非player全屏让normal隐藏，v-show没作用？？？？
+    watch(fullScreen, (newFullScreen) => {
+      if (newFullScreen) return
+      setTimeout(() => {
+        normalplayerRef.value.style.display = 'none'
+      }, 600)
+    })
+
     return {
       playList,
       barRef,
@@ -405,6 +409,7 @@ export default {
       onMiddleTouchEnd,
       // animation
       cdWrapperRef,
+      normalplayerRef,
       enter,
       afterEnter,
       leave,

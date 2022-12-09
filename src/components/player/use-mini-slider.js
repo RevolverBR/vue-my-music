@@ -48,6 +48,7 @@ export default function useMiniSlider() {
           // miniplayer轮播切画面换同时切换歌曲
           sliderVal.on('slidePageChanged', ({ pageX }) => {
             store.commit('setCurrentIndex', pageX)
+            // 切miniplayer-slider自动播放歌曲，但是在miniplaylist里删除当前歌曲前面歌曲时会自动播放，效果不好
             // store.commit('setPlayingState', true)
           })
         } else {
@@ -63,8 +64,10 @@ export default function useMiniSlider() {
       }
     })
 
+    // PlayList发生变化的时候，refresh slider，不然playlist发生变化(removeSong)，dom结构没变化，切歌时会报错
     watch(playlist, async newList => {
       if (sliderVal && sliderShow.value && newList.length) {
+        // 数据变化到dom变化要等一个tick
         await nextTick()
         sliderVal.refresh()
       }

@@ -32,10 +32,53 @@ export function changeMode({ commit, state, getters }, mode) {
     commit('setPlayList', state.sequenceList)
   }
   // 让当前歌曲index重新绑定到洗牌后的当前歌曲
-  const index = state.playList.findIndex((song) => {
+  const index = state.playList.findIndex(song => {
     return song.id === currentId
   })
 
   commit('setCurrentIndex', index)
   commit('setPlayMode', mode)
+}
+
+// removeSong
+export function removeSong({ commit, state }, song) {
+  const sequenceList = state.sequenceList.slice()
+  const playList = state.playList.slice()
+
+  const sequenceListIndex = findIndex(sequenceList, song)
+  const playListIndex = findIndex(playList, song)
+
+  // 一层保护
+  if (sequenceListIndex < 0 || playListIndex < 0) return
+
+  sequenceList.splice(sequenceListIndex, 1)
+  playList.splice(playListIndex, 1)
+
+  // 删除当前歌曲前面歌曲时index发生变化，让index自适应
+  let currentIndex = state.currentIndex
+  if (playListIndex < currentIndex || currentIndex === playList.length) {
+    currentIndex--
+  }
+
+  commit('setSequenceList', sequenceList)
+  commit('setPlayList', playList)
+  commit('setCurrentIndex', currentIndex)
+  if (!playList.length) {
+    commit('setPlayingState', false)
+  }
+}
+
+// 清空列表
+export function clearSongList({ commit, state }) {
+  commit('setSequenceList', [])
+  commit('setPlayList', [])
+  commit('setCurrentIndex', 0)
+  commit('setPlayingState', false)
+}
+
+// removeSong内使用
+function findIndex(list, song) {
+  return list.findIndex(item => {
+    return item.id === song.id
+  })
 }

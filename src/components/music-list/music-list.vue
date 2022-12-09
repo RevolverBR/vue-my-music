@@ -32,9 +32,9 @@
 </template>
 
 <script>
-import myScroll from '@/components/base/scroll/scroll.vue'
-import songList from '@/components/base/song-list/song-list.vue'
-import { mapActions } from 'vuex'
+import myScroll from '@/components/wrap-scroll/wrap-scroll'
+import songList from '@/components/base/song-list/song-list'
+import { mapActions, mapState } from 'vuex'
 
 const RESERVED_HEIGHT = 40
 
@@ -100,8 +100,10 @@ export default {
       }
     },
     scrollStyle() {
+      const bottom = this.playList.length ? '40px' : '0'
       return {
-        top: `${this.imageHeight}px`
+        top: `${this.imageHeight}px`,
+        bottom
       }
     },
     filterStyle() {
@@ -130,7 +132,8 @@ export default {
       }
 
       return { display }
-    }
+    },
+    ...mapState(['playList'])
   },
   methods: {
     // 返回歌手页

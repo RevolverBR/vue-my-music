@@ -8,6 +8,9 @@
             <h1 class="title">
               <i class="icon" :class="modeIcon" @click="changeMode"></i>
               <span class="text">{{ modeText }}</span>
+              <span class="clear" @click="showConfirm">
+                <i class="icon-clear"></i>
+              </span>
             </h1>
           </div>
           <!-- list-content -->
@@ -21,10 +24,16 @@
               >
                 <i class="current" :class="getCurrentIcon(song)"></i>
                 <span class="text">{{ song.name }}</span>
-                <span class="favorite" @click="toggleFavorite(song)">
+                <span class="favorite" @click.stop="toggleFavorite(song)">
                   <i :class="getFavoriteIcon(song)"></i>
                 </span>
-                <span class="delete" @click.stop="removeSong"></span>
+                <span
+                  class="delete"
+                  :class="{ disable: removing }"
+                  @click.stop="removeSong(song)"
+                >
+                  <i class="icon-delete"></i>
+                </span>
               </li>
             </transition-group>
           </my-scroll>
@@ -32,6 +41,13 @@
             <span>关闭</span>
           </div>
         </div>
+        <!-- confirm -->
+        <confirm
+          text="是否清空播放列表?"
+          confirm-btn-text="清空"
+          ref="confirmRef"
+          @confirm="confirmClear"
+        ></confirm>
       </div>
     </transition>
   </teleport>
@@ -39,6 +55,7 @@
 
 <script>
 import myScroll from '@/components/base/scroll/scroll'
+import confirm from '@/components/base/confirm/confirm'
 import { ref, computed, nextTick, watch } from 'vue'
 import { useStore } from 'vuex'
 import useMode from './use-mode'
@@ -46,13 +63,16 @@ import useFavorite from './use-favorite'
 export default {
   name: 'myPlaylist',
   components: {
-    myScroll
+    myScroll,
+    confirm
   },
   setup() {
     const visible = ref(false)
     const store = useStore()
     const scrollRef = ref(null)
     const listRef = ref(null)
+    const removing = ref(false)
+    const confirmRef = ref(null)
     // computed
     const playList = computed(() => store.state.playList)
 
@@ -62,8 +82,8 @@ export default {
     const { modeIcon, modeText, changeMode } = useMode()
     const { getFavoriteIcon, toggleFavorite } = useFavorite()
 
-    watch(currentSong, async() => {
-      if (!visible.value) return
+    watch(currentSong, async newSong => {
+      if (!visible.value || !newSong.id) return
       await nextTick()
       scrollToCurrent()
     })
@@ -94,7 +114,9 @@ export default {
       const index = sequenceList.value.findIndex(song => {
         return currentSong.value.id === song.id
       })
-      const target = listRef.value.children[index]
+      // 点击remove过快会触发多次，dispatch removeSong时使currentIndex在--时变成负数
+      if (index === -1) return
+      const target = listRef.value.$el.children[index]
 
       scrollRef.value.scroll.scrollToElement(target, 300)
     }
@@ -108,10 +130,34 @@ export default {
       store.commit('setPlayingState', true)
     }
 
+    function removeSong(song) {
+      // 限制removing歌曲的操作时间间隔
+      if (removing.value) return
+      removing.value = true
+      store.dispatch('removeSong', song)
+      if (!playList.value.length) {
+        hide()
+      }
+      setTimeout(() => {
+        removing.value = false
+      }, 300)
+    }
+
+    function showConfirm() {
+      confirmRef.value.show()
+    }
+
+    function confirmClear() {
+      store.dispatch('clearSongList')
+      hide()
+    }
+
     return {
       visible,
       playList,
       sequenceList,
+      removing,
+      confirmRef,
       // hook
       modeIcon,
       modeText,
@@ -123,7 +169,10 @@ export default {
       getCurrentIcon,
       scrollRef,
       listRef,
-      selectItem
+      selectItem,
+      removeSong,
+      showConfirm,
+      confirmClear
     }
   }
 }
