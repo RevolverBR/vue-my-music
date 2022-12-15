@@ -80,8 +80,14 @@ export default function useMiniSlider() {
     }
   })
 
-  onActivated(() => {})
-  onDeactivated(() => {})
+  onActivated(() => {
+    slider.value.enable()
+    slider.value.refresh()
+  })
+
+  onDeactivated(() => {
+    slider.value.disable()
+  })
 
   return { slider, sliderWrapperRef }
 }

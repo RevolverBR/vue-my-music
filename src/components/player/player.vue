@@ -139,6 +139,7 @@ import useCd from './use-cd'
 import useLyric from './use-lyric'
 import useMiddleInterActive from './use-middle-interactive'
 import useAnimation from './use-animation'
+import usePlayHistory from './use-playHistory'
 // data
 import { PLAY_MODE } from '@/assets/js/constant'
 
@@ -216,6 +217,9 @@ export default {
       leave,
       afterLeave
     } = useAnimation()
+
+    // playHistory
+    const { savePlay } = usePlayHistory()
 
     // 开始播放
     watch(currentSong, newSong => {
@@ -317,6 +321,7 @@ export default {
       if (songReady.value) return
       songReady.value = true
       playLyric()
+      savePlay(currentSong.value)
     }
 
     // 监听播放错误

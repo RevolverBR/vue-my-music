@@ -37,6 +37,12 @@
               </li>
             </transition-group>
           </my-scroll>
+          <div class="list-add">
+            <div class="add" @click="showAddSong">
+              <i class="icon-add"></i>
+              <span class="text">添加歌曲到队列</span>
+            </div>
+          </div>
           <div class="list-footer" @click="hide">
             <span>关闭</span>
           </div>
@@ -48,23 +54,29 @@
           ref="confirmRef"
           @confirm="confirmClear"
         ></confirm>
+        <AddSong ref="addSongRef" />
       </div>
     </transition>
   </teleport>
 </template>
 
 <script>
-import myScroll from '@/components/base/scroll/scroll'
-import confirm from '@/components/base/confirm/confirm'
 import { ref, computed, nextTick, watch } from 'vue'
 import { useStore } from 'vuex'
+
+import myScroll from '@/components/base/scroll/scroll'
+import confirm from '@/components/base/confirm/confirm'
+import AddSong from '@/components/add-song/add-song'
+
 import useMode from './use-mode'
 import useFavorite from './use-favorite'
+
 export default {
   name: 'myPlaylist',
   components: {
     myScroll,
-    confirm
+    confirm,
+    AddSong
   },
   setup() {
     const visible = ref(false)
@@ -73,6 +85,7 @@ export default {
     const listRef = ref(null)
     const removing = ref(false)
     const confirmRef = ref(null)
+    const addSongRef = ref(null)
     // computed
     const playList = computed(() => store.state.playList)
 
@@ -152,6 +165,10 @@ export default {
       hide()
     }
 
+    function showAddSong() {
+      addSongRef.value.show()
+    }
+
     return {
       visible,
       playList,
@@ -172,7 +189,9 @@ export default {
       selectItem,
       removeSong,
       showConfirm,
-      confirmClear
+      confirmClear,
+      showAddSong,
+      addSongRef
     }
   }
 }
@@ -272,6 +291,25 @@ export default {
           &.disable {
             color: $color-theme-d;
           }
+        }
+      }
+    }
+    .list-add {
+      width: 140px;
+      margin: 20px auto 30px auto;
+      .add {
+        display: flex;
+        align-items: center;
+        padding: 8px 16px;
+        border: 1px solid $color-text-l;
+        border-radius: 100px;
+        color: $color-text-l;
+        .icon-add {
+          margin-right: 5px;
+          font-size: $font-size-small-s;
+        }
+        .text {
+          font-size: $font-size-small;
         }
       }
     }

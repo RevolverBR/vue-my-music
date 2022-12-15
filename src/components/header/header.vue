@@ -2,9 +2,12 @@
   <div class="header">
     <span class="icon"></span>
     <h1 class="text">IChicken</h1>
-    <router-link class="mine" to="/recommend">
+    <router-link class="mine" to="/user">
       <i class="icon-mine"></i>
     </router-link>
+    <!-- <div class="mine">
+      <i class="icon-mine" @click="$router.push({ path: '/user' })"></i>
+    </div> -->
   </div>
 </template>
 

@@ -20,8 +20,11 @@ export function remove(key, compare) {
 // 辅助
 function insertArray(arr, val, compare, maxLen) {
   const index = arr.findIndex(compare)
-  if (index > -1) {
+  if (index === 0) {
     return
+  }
+  if (index > 0) {
+    arr.splice(index, 1)
   }
   arr.unshift(val)
   if (maxLen && arr.length > maxLen) {
@@ -39,4 +42,14 @@ function deleteFromArray(arr, compare) {
 // 初始化从storage得到favoritelist
 export function load(key) {
   return storage.get(key, [])
+}
+
+// 清空
+export function clear(key) {
+  storage.remove(key)
+  return []
+}
+
+export function saveAll(items, key) {
+  storage.set(key, items)
 }

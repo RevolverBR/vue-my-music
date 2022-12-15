@@ -76,6 +76,31 @@ export function clearSongList({ commit, state }) {
   commit('setPlayingState', false)
 }
 
+export function addSong({ commit, state }, song) {
+  const playList = state.playList.slice()
+  const sequenceList = state.sequenceList.slice()
+  let currentIndex = state.currentIndex
+  const playIndex = findIndex(playList, song)
+
+  if (playIndex > -1) {
+    currentIndex = playIndex
+  } else {
+    playList.push(song)
+    currentIndex = playList.length - 1
+  }
+
+  const sequenceListIndex = findIndex(sequenceList, song)
+  if (sequenceListIndex === -1) {
+    sequenceList.push(song)
+  }
+
+  commit('setSequenceList', sequenceList)
+  commit('setPlayList', playList)
+  commit('setCurrentIndex', currentIndex)
+  commit('setPlayingState', true)
+  commit('setFullScreen', true)
+}
+
 // removeSong内使用
 function findIndex(list, song) {
   return list.findIndex(item => {
